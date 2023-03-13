@@ -1,24 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
 import { nanoid } from 'nanoid';
+import { addContact, deleteContact } from 'redux/contactsSlice';
+import { addFilter } from 'redux/filterSlice';
+
+import { getContacts, getFilter } from 'redux/selectors';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    const contacts = JSON.parse(localStorage.getItem('contacts'));
-    if (contacts && contacts.length) {
-      setContacts([...contacts]);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const dispatch = useDispatch();
+  const contactsList = useSelector(getContacts);
+  const filter = useSelector(getFilter);
 
   const onHandleSubmit = (name, number) => {
     const newContact = {
@@ -26,27 +20,26 @@ export const App = () => {
       name,
       number,
     };
-    const findContact = contacts.find(contact => contact.name === name);
+    const findContact = contactsList.find(contact => contact.name === name);
     if (findContact) {
       alert(`${name} is already in contacts`);
     } else {
-      setContacts([newContact, ...contacts]);
+      dispatch(addContact(newContact));
     }
   };
 
   const onFilterChange = e => {
-    setFilter(e.target.value);
+    dispatch(addFilter(e.target.value));
   };
 
   const filteredContacts = () => {
-    return contacts.filter(contact =>
+    return contactsList.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
 
   const deleteItem = id => {
-    const newContacts = contacts.filter(contact => contact.id !== id);
-    setContacts(newContacts);
+    dispatch(deleteContact(id));
   };
 
   return (
