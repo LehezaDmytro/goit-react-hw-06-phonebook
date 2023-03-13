@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactList/ContactList';
-import { nanoid } from 'nanoid';
 import { addContact, deleteContact } from 'redux/contactsSlice';
 import { addFilter } from 'redux/filterSlice';
 
@@ -15,16 +14,11 @@ export const App = () => {
   const filter = useSelector(getFilter);
 
   const onHandleSubmit = (name, number) => {
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
     const findContact = contactsList.find(contact => contact.name === name);
     if (findContact) {
       alert(`${name} is already in contacts`);
     } else {
-      dispatch(addContact(newContact));
+      dispatch(addContact(name, number));
     }
   };
 
